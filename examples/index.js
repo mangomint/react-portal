@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Portal, { PortalTarget } from '../lib/portal.js';
+import Portal, { PortalTarget } from '../build/portal.js';
 import PseudoModal from './pseudomodal';
 import LoadingBar from './loadingbar';
 import AbsolutePosition from './absoluteposition';
