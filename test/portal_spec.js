@@ -1,8 +1,8 @@
 import jsdom from 'jsdom';
-import Portal from '../lib/portal';
+import Portal, { PortalTarget } from '../lib/portal';
 import assert from 'assert';
 import { spy } from 'sinon';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { render, unmountComponentAtNode, findDOMNode } from 'react-dom';
 import { mount } from 'enzyme';
 
 describe('react-portal', () => {
@@ -34,6 +34,29 @@ describe('react-portal', () => {
     assert.equal(wrapper.instance().node.firstElementChild.tagName, 'P');
     assert.equal(document.body.lastElementChild, wrapper.instance().node);
     assert.equal(document.body.childElementCount, 1);
+  });
+
+  it('should append portal to custom container', () => {
+    const targetNode = document.createElement('div');
+    const targetID = 'target-attribute';
+    targetNode.setAttribute('data-portaltarget', targetID);
+    document.body.appendChild(targetNode);
+    const wrapper = mount(<Portal isOpen target={targetID}><p>Hi</p></Portal>);
+    assert.equal(wrapper.instance().node.firstElementChild.tagName, 'P');
+    assert.equal(targetNode.lastElementChild, wrapper.instance().node);
+    assert.equal(targetNode.childElementCount, 1);
+  });
+
+  it('should append portal to portaltarget', () => {
+    const targetID = 'target-component';
+    const target = mount(<PortalTarget name={targetID} />);
+    const targetNode = findDOMNode(target.instance());
+    assert.equal(targetNode.getAttribute('data-portaltarget'), targetID);
+    document.body.appendChild(targetNode);
+    const wrapper = mount(<Portal isOpen target={targetID}><p>Hi</p></Portal>);
+    assert.equal(wrapper.instance().node.firstElementChild.tagName, 'P');
+    assert.equal(targetNode.lastElementChild, wrapper.instance().node);
+    assert.equal(targetNode.childElementCount, 1);
   });
 
   it('should open when this.openPortal() is called (used to programmatically open portal)', () => {
